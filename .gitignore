@@ -1,0 +1,9 @@
+# directories
+.venv/
+.idea/
+__pycache__/
+
+# files by type
+
+# individual files
+
