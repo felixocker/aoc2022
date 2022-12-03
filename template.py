@@ -1,17 +1,21 @@
 #!/usr/bin/env python3
-"""AOC 2022 day X pt Y"""
+"""AOC 2022 day X"""
 
 
 from aocd.models import Puzzle
 
 
-def main(data):
+def part_a(data):
+    raise NotImplementedError
+
+
+def part_b(data):
     raise NotImplementedError
 
 
 if __name__ == "__main__":
-    with open("input_pt_1.txt") as f:
-        result = main(f.read())
-    # assert result == ??, f"result not as expected: {result}"
-    # puzzle = Puzzle(year=2022, day=01)
-    # print(main(puzzle.input_data))
+    puzzle = Puzzle(year=2022, day=0)
+    print("Part A")
+    print(part_a(puzzle.input_data))
+    print("Part B")
+    print(part_b(puzzle.input_data))
