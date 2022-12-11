@@ -4,7 +4,6 @@
 __pycache__/
 
 # files by type
-*.txt
 
 # individual files
-
+input.txt
