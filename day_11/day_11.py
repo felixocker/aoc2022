@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+import math
+
 from aocd.models import Puzzle
 
 
@@ -102,9 +104,7 @@ def part_a(data, rounds: int = 20):
 
 def part_b(data, rounds: int = 10000):
     monkeys = monkey_init(data)
-    supermod = 1
-    for m in monkeys:
-        supermod *= m.test_value
+    supermod = math.prod(m.test_value for m in monkeys)
     for _ in range(rounds):
         for m in monkeys:
             m.run(supermod=supermod)
