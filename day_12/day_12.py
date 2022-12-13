@@ -5,6 +5,7 @@
 import heapq
 import itertools
 import string
+from typing import Generator
 
 import numpy as np
 from aocd.models import Puzzle
@@ -35,7 +36,7 @@ def preprocess_map(my_map: np.array) -> np.array:
     return my_map.astype(int)
 
 
-def move(pos: tuple, my_map: np.array):
+def move(pos: tuple, my_map: np.array) -> Generator:
     x, y = pos
     for m in ((0, 1), (0, -1), (1, 0), (-1, 0)):
         new = x+m[0], y+m[1]
@@ -44,7 +45,16 @@ def move(pos: tuple, my_map: np.array):
             yield new
 
 
-def dijkstra(padded_map: np.array, start: tuple, end: tuple) -> int:
+def reverse_move(pos: tuple, my_map: np.array) -> Generator:
+    x, y = pos
+    for m in ((0, 1), (0, -1), (1, 0), (-1, 0)):
+        new = x+m[0], y+m[1]
+        nxt_val = my_map[new[0]][new[1]]
+        if not nxt_val == 0 and my_map[x][y] <= nxt_val + 1:
+            yield new
+
+
+def dijkstra(padded_map: np.array, start: tuple, end: tuple, find_closest: int = None) -> int:
     nodes = [(i, j) for i in range(1, padded_map.shape[0]-1) for j in range(1, padded_map.shape[1]-1)]
     distances = {n: float("inf") for n in nodes}
     priors = {n: None for n in nodes}
@@ -56,9 +66,16 @@ def dijkstra(padded_map: np.array, start: tuple, end: tuple) -> int:
         add_node_to_heap(node_heap, n, counter, entry_finder, priority=distances[n])
     while end in entry_finder:
         closest = pop_node_from_heap(node_heap, entry_finder)
-        for nxt in move(closest, padded_map):
+        if find_closest is None:
+            neighbours = list(move(closest, padded_map))
+        else:
+            neighbours = list(reverse_move(closest, padded_map))
+        for nxt in neighbours:
             if nxt in entry_finder:
                 update_distance(closest, nxt, distances, priors, node_heap, counter, entry_finder)
+        if find_closest is not None:
+            if padded_map[closest[0]][closest[1]] == find_closest:
+                return distances[closest]
     return distances[end]
 
 
@@ -103,11 +120,9 @@ def part_a(data) -> int:
 
 def part_b(data) -> int:
     padded_map = parse(data)
-    _, end = find(padded_map)
+    end, start = find(padded_map)
     processed_map = preprocess_map(padded_map)
-    starts = list(zip(*np.where(processed_map == 1)))
-    path_lengths = [dijkstra(processed_map, start, end) for start in starts]
-    return min(path_lengths)
+    return dijkstra(processed_map, start, end, find_closest=1)
 
 
 if __name__ == "__main__":
